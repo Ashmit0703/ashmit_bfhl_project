@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Form</title>
+</head>
+<body>
+    <h1>Submit JSON and Select Options</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.json_input.label }}<br>
+            {{ form.json_input(rows=5, cols=50) }}<br>
+            {% for error in form.json_input.errors %}
+                <span style="color: red;">[{{ error }}]</span><br>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.options.label }}<br>
+            {{ form.options() }}<br>
+            {% for error in form.options.errors %}
+                <span style="color: red;">[{{ error }}]</span><br>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+
+    {% if response %}
+        <h2>Response</h2>
+        <ul>
+            {% if 'alphabets' in response %}
+                <li><strong>Alphabets:</strong> {{ response['alphabets'] }}</li>
+            {% endif %}
+            {% if 'numbers' in response %}
+                <li><strong>Numbers:</strong> {{ response['numbers'] }}</li>
+            {% endif %}
+            {% if 'highest_lowercase' in response %}
+                <li><strong>Highest Lowercase Alphabet:</strong> {{ response['highest_lowercase'] }}</li>
+            {% endif %}
+        </ul>
+    {% endif %}
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>

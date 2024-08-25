@@ -1,0 +1,87 @@
+<!-- templates/post_page.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POST Page</title>
+</head>
+<body>
+    <h1>POST Request Received</h1>
+
+    {% if is_success %}
+        <p>Success: {{ is_success }}</p>
+        <p>User ID: {{ user_id }}</p>
+        <p>Email: {{ email }}</p>
+        <p>Roll Number: {{ roll_number }}</p>
+
+        <!-- Multi-Select Dropdown -->
+        <form id="dataForm">
+            <label for="data-options">Select Data to Display:</label>
+            <select id="data-options" name="data_options" multiple>
+                <option value="alphabets">Alphabets</option>
+                <option value="numbers">Numbers</option>
+                <option value="highest_lowercase_alphabet">Highest Lowercase Alphabet</option>
+            </select>
+            <br><br>
+            <button type="submit">Submit</button>
+        </form>
+
+        <!-- Displaying the Selected Data -->
+        <div id="responseContainer">
+            <!-- Response data will be injected here -->
+        </div>
+
+        <script>
+            document.getElementById('dataForm').addEventListener('submit', function(event) {
+                event.preventDefault();  // Prevent the default form submission
+
+                const selectedOptions = Array.from(document.getElementById('data-options').selectedOptions).map(option => option.value);
+
+                fetch('/bfhl', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        selected_data: selectedOptions,
+                        // Add any other data you need to send along with the request
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the DOM with the response data
+                    const container = document.getElementById('responseContainer');
+                    container.innerHTML = '';  // Clear previous response
+
+                    if (data.is_success) {
+                        if (selectedOptions.includes('alphabets')) {
+                            const alphabets = document.createElement('p');
+                            alphabets.textContent = `Alphabets: ${data.alphabets}`;
+                            container.appendChild(alphabets);
+                        }
+                        if (selectedOptions.includes('numbers')) {
+                            const numbers = document.createElement('p');
+                            numbers.textContent = `Numbers: ${data.numbers}`;
+                            container.appendChild(numbers);
+                        }
+                        if (selectedOptions.includes('highest_lowercase_alphabet')) {
+                            const highestLower = document.createElement('p');
+                            highestLower.textContent = `Highest Lowercase Alphabet: ${data.highest_lowercase_alphabet}`;
+                            container.appendChild(highestLower);
+                        }
+                    } else {
+                        const error = document.createElement('p');
+                        error.textContent = `Error: ${data.error}`;
+                        container.appendChild(error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        </script>
+
+    {% else %}
+        <p>Error: {{ error }}</p>
+    {% endif %}
+</body>
+</html>
